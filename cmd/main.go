@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/avg73/joker/pkg/actions"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -15,7 +15,7 @@ func main() {
 		{
 			Name:   "random",
 			Usage:  "prints a random joke.",
-			Action: randomJoke,
+			Action: actions.Random,
 		},
 		{
 			Name:  "dump",
@@ -27,19 +27,8 @@ func main() {
 					Value: 5,
 				},
 			},
-			Action: dumpJokes,
+			Action: actions.Dump,
 		},
 	}
 	app.Run(os.Args)
-}
-
-func randomJoke(c *cli.Context) error {
-	fmt.Println("Random joke")
-	return nil
-}
-
-func dumpJokes(c *cli.Context) error {
-	n := c.Int("n")
-	fmt.Println("Dump jokes", n)
-	return nil
 }
