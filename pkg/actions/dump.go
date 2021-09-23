@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/avg73/joker/pkg/repository"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/urfave/cli.v1"
 )
 
@@ -13,32 +14,29 @@ func Dump(c *cli.Context) error {
 
 	categories, err := repository.GetCategories()
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
+	g := new(errgroup.Group)
 	for _, c := range categories {
-		jokes := make([]string, n)
+		category := c
+		g.Go(func() error { return getAndWriteJokes(n, category) })
+	}
+	return g.Wait()
+}
 
-		for i := range jokes {
-			joke, err := repository.GetJoke(c)
-			if err != nil {
-				fmt.Println(err)
-				return err
-			}
-			jokes[i] = joke.Value
-		}
+func getAndWriteJokes(n int, category string) error {
+	jokes := make([]string, n)
 
-		err = writeFile(c, jokes)
+	for i := range jokes {
+		joke, err := repository.GetJoke(category)
 		if err != nil {
 			return err
 		}
+		jokes[i] = joke.Value
 	}
-	return nil
-}
 
-func writeFile(name string, jokes []string) error {
-	name += ".txt"
+	name := fmt.Sprintf("%s.txt", category)
 	f, err := os.Create(name)
 	if err != nil {
 		return err
