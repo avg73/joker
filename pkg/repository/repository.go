@@ -9,8 +9,8 @@ import (
 	"github.com/avg73/joker/pkg/models"
 )
 
-func GetJoke() (*models.Joke, error) {
-	resp, err := http.Get("https://api.chucknorris.io/jokes/random")
+func getBody(path string) ([]byte, error) {
+	resp, err := http.Get(path)
 	if err != nil {
 		return nil, err
 	}
@@ -20,13 +20,42 @@ func GetJoke() (*models.Joke, error) {
 	if err != nil {
 		return nil, err
 	}
+	return body, nil
+}
+
+// GetJoke gets random Joke (from a given category if it is not an empty string)
+func GetJoke(category string) (*models.Joke, error) {
+	path := "https://api.chucknorris.io/jokes/random"
+	if category != "" {
+		path = fmt.Sprintf("%s?category=%s", path, category)
+	}
+
+	body, err := getBody(path)
+	if err != nil {
+		return nil, err
+	}
 
 	joke := new(models.Joke)
 	err = json.Unmarshal(body, joke)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
 	return joke, nil
+}
+
+func GetCategories() ([]string, error) {
+	path := "https://api.chucknorris.io/jokes/categories"
+	body, err := getBody(path)
+	if err != nil {
+		return nil, err
+	}
+
+	categories := new([]string)
+	err = json.Unmarshal(body, categories)
+	if err != nil {
+		return nil, err
+	}
+
+	return *categories, nil
 }

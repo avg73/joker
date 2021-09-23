@@ -8,7 +8,7 @@ import (
 )
 
 func Random(c *cli.Context) error {
-	joke, err := repository.GetJoke()
+	joke, err := repository.GetJoke("")
 	if err != nil {
 		return err
 	}
