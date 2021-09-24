@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/avg73/joker/pkg/actions"
@@ -10,6 +11,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "joker"
+	app.Version = "0.0.1"
 	app.Usage = "CLI application for https://api.chucknorris.io/"
 	app.Commands = []cli.Command{
 		{
@@ -30,5 +32,9 @@ func main() {
 			Action: actions.Dump,
 		},
 	}
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }

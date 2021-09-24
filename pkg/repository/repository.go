@@ -16,11 +16,7 @@ func getBody(path string) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return body, nil
+	return io.ReadAll(resp.Body)
 }
 
 // GetJoke gets random Joke (from a given category if it is not an empty string)
